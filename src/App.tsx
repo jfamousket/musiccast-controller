@@ -26,8 +26,6 @@ import { theme } from "./theme";
 import { useInterval } from "react-use";
 import { capitalize } from "lodash";
 import { delay } from "./helpers";
-import axios from "axios";
-import { Buffer } from "buffer/";
 
 type State = {
   albumArt: string;
@@ -69,38 +67,20 @@ const App = () => {
 
   const update = React.useCallback(() => {
     yamaha.getStatus("main").then((status) => {
-      return yamaha
-        .getPlayInfo("netusb")
-        .then((info) => {
-          setState({
-            playing: info.playback === "play",
-            mute: status.mute,
-            volume: status.volume,
-            volumeMax: status.max_volume,
-            artist: info.artist,
-            album: info.album,
-            input: status.input,
-            power: status.power === "on",
-          });
-          return info;
-        })
-        .then((info) => {
-          axios
-            .get(process.env.REACT_APP_PROXY + info.albumart_url, {
-              responseType: "arraybuffer",
-              headers: {
-                ProxyTo: "192.168.0.31",
-              },
-            })
-            .then((res) => {
-              const blob = new Blob([res.data], {
-                type: res.headers["content-type"],
-              });
-              setState({
-                albumArt: URL.createObjectURL(blob),
-              });
-            });
+      return yamaha.getPlayInfo("netusb").then((info) => {
+        setState({
+          albumArt: info.albumart_url,
+          playing: info.playback === "play",
+          mute: status.mute,
+          volume: status.volume,
+          volumeMax: status.max_volume,
+          artist: info.artist,
+          album: info.album,
+          input: status.input,
+          power: status.power === "on",
         });
+        return info;
+      });
     });
   }, []);
 
