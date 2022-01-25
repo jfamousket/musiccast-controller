@@ -29,10 +29,11 @@ export class YamahaYXC {
     return this.request({
       method,
       data: body,
-      url: "/YamahaExtendedControl/v1" + cmd,
+      url: process.env.REACT_APP_PROXY + "/YamahaExtendedControl/v1" + cmd,
       headers: {
         "X-AppName": "MusicCast/1.0",
         "X-AppPort": "41100",
+        ProxyTo: "192.168.0.31",
       },
     });
   }
